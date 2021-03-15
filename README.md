@@ -18,7 +18,7 @@ if (typeof FetchEvent !== 'undefined') console.log(true);
 self.addEventListener('fetch', event => {
   event.respondWith(new Response('Hello World', { 
     status: 200, 
-    headers: [['content-type', 'plain/text']],
+    headers: [['content-type', 'text/plain']],
   }));
 });
 ```
