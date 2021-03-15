@@ -1,0 +1,34 @@
+{
+  "name": "@worker-tools/deno-fetch-event-adapter",
+  "description": "",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "mod.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "prepack": "npm run build",
+    "build": "mkdir -p dist && deno bundle mod.ts > dist/index.js"
+  },
+  "author": "Florian Klampfer <mail@qwtel.com> (https://qwtel.com/)",
+  "license": "MIT",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/worker-tools/deno-fetch-event-adapter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/worker-tools/deno-fetch-event-adapter/issues"
+  },
+  "homepage": "https://github.com/worker-tools/deno-fetch-event-adapter#readme"
+}
