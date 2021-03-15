@@ -58,7 +58,7 @@ self.FetchEvent = DenoFetchEvent;
 
 ;(async () => {
   // TODO: https support!?
-  const server = serve({ port: Number(self.location.port ?? 80) });
+  const server = serve({ port: Number(self.location.port || 80) });
   for await (const req of server) {
     self.dispatchEvent(new DenoFetchEvent(req));
   }
