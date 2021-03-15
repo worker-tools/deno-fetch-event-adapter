@@ -32,7 +32,7 @@ class DenoFetchEvent extends Event implements FetchEvent {
 
     this.#respond = respond(denoReq);
 
-    const info = new URL(denoReq.url, location.origin).href;
+    const info = new URL(denoReq.url, self.location.origin).href;
     this.#request = new Request(info, {
       method: denoReq.method,
       headers: denoReq.headers,
@@ -58,7 +58,7 @@ self.FetchEvent = DenoFetchEvent;
 
 ;(async () => {
   // TODO: https support!?
-  const server = serve({ port: Number(location.port ?? 80) });
+  const server = serve({ port: Number(self.location.port ?? 80) });
   for await (const req of server) {
     self.dispatchEvent(new DenoFetchEvent(req));
   }
