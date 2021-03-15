@@ -56,12 +56,14 @@ class DenoFetchEvent extends Event implements FetchEvent {
 // TODO: Don't overwrite if already present?
 self.FetchEvent = DenoFetchEvent;
 
-if (!self.location) 
-  throw Error('Deno needs to run with the --location flag for fetch-polyfill to work.');
+;(async () => {
+  if (!self.location) 
+    throw Error('Deno needs to run with the --location flag for fetch-event-adapter to work.');
 
-// TODO: https support!?
+  // TODO: https support!?
 
-const server = serve({ port: Number(location.port ?? 80) });
-for await (const req of server) {
-  self.dispatchEvent(new DenoFetchEvent(req));
-}
+  const server = serve({ port: Number(location.port ?? 80) });
+  for await (const req of server) {
+    self.dispatchEvent(new DenoFetchEvent(req));
+  }
+})();
