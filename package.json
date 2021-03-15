@@ -32,5 +32,12 @@
   "bugs": {
     "url": "https://github.com/worker-tools/deno-fetch-event-adapter/issues"
   },
-  "homepage": "https://github.com/worker-tools/deno-fetch-event-adapter#readme"
+  "homepage": "https://github.com/worker-tools/deno-fetch-event-adapter#readme",
+  "keywords": [
+    "polyfill",
+    "service-worker",
+    "deno",
+    "cloudflare-workers",
+    "fetch-event"
+  ]
 }
