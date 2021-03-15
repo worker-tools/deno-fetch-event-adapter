@@ -16,13 +16,15 @@
     "test": "test"
   },
   "scripts": {
-    "clean": "rm -rf dist",
-    "prepack": "npm run build",
-    "build": "mkdir -p dist && deno bundle mod.ts > dist/index.js"
+    "clean": "shx rm -rf dist",
+    "prepack": "npm run clean && npm run build",
+    "build": "shx mkdir -p dist && deno bundle mod.ts > dist/index.js"
   },
   "author": "Florian Klampfer <mail@qwtel.com> (https://qwtel.com/)",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "shx": "^0.3.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/worker-tools/deno-fetch-event-adapter.git"
