@@ -1,4 +1,4 @@
-import './types.d.ts';
+import './mod.d.ts';
 import { serve, ServerRequest } from "https://deno.land/std/http/server.ts";
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
 
@@ -63,3 +63,5 @@ self.FetchEvent = DenoFetchEvent;
     self.dispatchEvent(new DenoFetchEvent(req));
   }
 })();
+
+export {}
