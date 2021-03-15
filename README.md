@@ -2,11 +2,12 @@
 
 Provides the global `fetch` event using Deno's [http](https://deno.land/std/http) module. 
 
-This is mostly intended as a temporary solution until Deno [implements the Service Worker spec](https://github.com/denoland/deno/issues/5957#issuecomment-722568905) directly.
+It is mostly intended as a temporary solution until Deno [implements the Service Worker spec](https://github.com/denoland/deno/issues/5957#issuecomment-722568905) directly.
 
-It meant for testing, developing Cloudflare Workers while offline, etc, not production use. 
+It works fine for local testing, developing Cloudflare Workers while offline, and similar use cases. 
+However, production use is not recommended.
 
-Example:
+## Example
 
 ```ts
 // file: 'mod.ts'
