@@ -47,21 +47,17 @@ class DenoFetchEvent extends Event implements FetchEvent {
     // Deno doesn't shut down the way Service Workers or CF Workers do, so this is a noop.
   }
 
-  get clientId(): string { throw Error('Getter not implemented.' )};
-  get preloadResponse(): Promise<any> { throw Error('Getter not implemented.' )};
-  get replacesClientId(): string { throw Error('Getter not implemented.' )};
-  get resultingClientId(): string { throw Error('Getter not implemented.' )};
+  get clientId(): string { return '' };
+  get preloadResponse(): Promise<any> { return Promise.resolve() };
+  get replacesClientId(): string { return '' };
+  get resultingClientId(): string { return '' };
 }
 
 // TODO: Don't overwrite if already present?
 self.FetchEvent = DenoFetchEvent;
 
 ;(async () => {
-  if (!self.location) 
-    throw Error('Deno needs to run with the --location flag for fetch-event-adapter to work.');
-
   // TODO: https support!?
-
   const server = serve({ port: Number(location.port ?? 80) });
   for await (const req of server) {
     self.dispatchEvent(new DenoFetchEvent(req));
