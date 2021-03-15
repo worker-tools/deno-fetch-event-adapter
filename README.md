@@ -1,6 +1,6 @@
 # Deno Fetch Event Adapter
 
-Provides the global `fetch` event using Deno's [http](https://deno.land/std/http) module. 
+Dispatches global `fetch` events using Deno's [http](https://deno.land/std/http) module.
 
 It is mostly intended as a temporary solution until Deno [implements the Service Worker spec](https://github.com/denoland/deno/issues/5957#issuecomment-722568905) directly.
 
