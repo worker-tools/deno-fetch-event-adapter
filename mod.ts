@@ -1,3 +1,4 @@
+import type * from './mod.d.ts'
 import { serve, ServerRequest } from "https://deno.land/std/http/server.ts";
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
 
