@@ -6,6 +6,7 @@ const respond = (denoReq: ServerRequest) => async ({ body, headers, status }: Re
   const reader = body?.getReader();
   try {
     const denoReader = reader && readerFromStreamReader(reader);
+    if (!headers.has('content-type')) headers.set('content-type', 'text/plain');
     await denoReq.respond({
       status,
       headers,
