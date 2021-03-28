@@ -1,5 +1,6 @@
-import { serve, ServerRequest } from "https://deno.land/std/http/server.ts";
+import { serve, serveTLS, ServerRequest } from "https://deno.land/std/http/server.ts";
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
+import parser from "https://deno.land/x/yargs_parser/deno.ts";
 
 const respond = (denoReq: ServerRequest) => async ({ body, headers, status }: Response) => {
   const reader = body?.getReader();
@@ -57,10 +58,33 @@ class DenoFetchEvent extends Event implements FetchEvent {
 self.FetchEvent = DenoFetchEvent;
 
 ;(async () => {
-  // TODO: https support!?
-  const server = serve({ port: Number(self.location.port || 80) });
-  for await (const req of server) {
-    self.dispatchEvent(new DenoFetchEvent(req));
+  if (self.location.protocol === 'https:' || self.location.port === '433') {
+    const { certFile, keyFile } = parser(Deno.args);
+
+    if (!certFile || !keyFile) {
+      console.warn('When using HTTPS or port 443, provide a --cert-file and --key-file parameter.');
+    }
+
+    const server = serveTLS({
+      hostname: self.location.hostname,
+      port: Number(self.location.port || 443),
+      certFile,
+      keyFile,
+    });
+
+    for await (const req of server) {
+      self.dispatchEvent(new DenoFetchEvent(req));
+    }
+
+  } else {
+    const server = serve({ 
+      hostname: self.location.hostname,
+      port: Number(self.location.port || 80),
+    });
+
+    for await (const req of server) {
+      self.dispatchEvent(new DenoFetchEvent(req));
+    }
   }
 })();
 
