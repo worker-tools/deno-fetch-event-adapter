@@ -34,6 +34,7 @@ class DenoFetchEvent extends Event implements FetchEvent {
     this.#respond = respond(denoReq);
 
     const info = new URL(denoReq.url, self.location.origin).href;
+    denoReq.headers.set('deno-connecting-ip', (denoReq.conn.remoteAddr as Deno.NetAddr).hostname);
     this.#request = new Request(info, {
       method: denoReq.method,
       headers: denoReq.headers,
