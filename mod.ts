@@ -1,6 +1,6 @@
 import { serve, serveTLS, ServerRequest } from "https://deno.land/std/http/server.ts";
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
-import parser from "https://deno.land/x/yargs_parser/deno.ts";
+import * as flags from "https://deno.land/std/flags/mod.ts";
 
 const respond = (denoReq: ServerRequest) => async ({ body, headers, status }: Response) => {
   const reader = body?.getReader();
@@ -59,10 +59,12 @@ self.FetchEvent = DenoFetchEvent;
 
 ;(async () => {
   if (self.location.protocol === 'https:' || self.location.port === '433') {
-    const { certFile, keyFile } = parser(Deno.args);
+    const { c, cert, k, key } = flags.parse(Deno.args);
+    const certFile = cert || c;
+    const keyFile = key || k;
 
     if (!certFile || !keyFile) {
-      console.warn('When using HTTPS or port 443, provide a --cert-file and --key-file parameter.');
+      console.warn('When using HTTPS or port 443, a --cert and --key are required.');
     }
 
     const server = serveTLS({

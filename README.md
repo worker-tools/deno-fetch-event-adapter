@@ -29,13 +29,13 @@ Your script needs the `--allow-net` permission and also requires a `--location`:
 deno run --allow-net --location=http://localhost:8000 mod.ts
 ```
 
-If you set the `--location` to either HTTPS or port 443, you have to provide a `--cert-file` and a `--key-file` parameter.
+If you set the `--location` to either HTTPS or port 443, you have to provide a `--cert` and a `--key` parameter.
 Your worker will also need the read permission to read the files:
 
 ```sh
 deno run --allow-net --allow-read --location=https://localhost:8000 mod.ts \
-  --cert-file=./path/to/localhost.key \
-  --key-file=./path/to/localhost.crt
+  --cert=./path/to/localhost.key \
+  --key=./path/to/localhost.crt
 ```
 
 For more, see Deno's [`http` module documentation](https://github.com/denoland/deno_std/tree/main/http).
