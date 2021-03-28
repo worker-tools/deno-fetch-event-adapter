@@ -2,6 +2,10 @@ import { serve, serveTLS, ServerRequest, Server } from "https://deno.land/std/ht
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
 import * as flags from "https://deno.land/std/flags/mod.ts";
 
+import { iterHeadersSetCookieFix } from './hacks.ts';
+
+let setCookieFix = false;
+
 const respond = (denoReq: ServerRequest) => async ({ body, headers, status }: Response) => {
   const reader = body?.getReader();
   try {
@@ -9,7 +13,9 @@ const respond = (denoReq: ServerRequest) => async ({ body, headers, status }: Re
     if (!headers.has('content-type')) headers.set('content-type', 'text/plain');
     await denoReq.respond({
       status,
-      headers,
+      headers: setCookieFix != null
+        ? iterHeadersSetCookieFix(headers) as unknown as Headers
+        : headers,
       body: denoReader,
     });
   } catch (err) {
@@ -59,10 +65,13 @@ class DenoFetchEvent extends Event implements FetchEvent {
 self.FetchEvent = DenoFetchEvent;
 
 ;(async () => {
+  const args = flags.parse(Deno.args);
+  setCookieFix = args.setCookieFix ?? args['set-cookie-fix'] ?? false;
+
   let server: Server;
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
-    const { c, cert, k, key } = flags.parse(Deno.args);
+    const { c, cert, k, key } = args;
     const certFile = cert || c;
     const keyFile = key || k;
 
