@@ -38,7 +38,9 @@ class DenoFetchEvent extends Event implements FetchEvent {
     this.#request = new Request(info, {
       method: denoReq.method,
       headers: denoReq.headers,
-      body: readableStreamFromIterable(Deno.iter(denoReq.body)),
+      body: denoReq.method !== 'GET' && denoReq.method !== 'HEAD'
+        ? readableStreamFromIterable(Deno.iter(denoReq.body))
+        : null
     });
   }
   get request(): Request { return this.#request };

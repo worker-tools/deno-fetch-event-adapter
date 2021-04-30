@@ -28,7 +28,7 @@ class AdaptedFetchEvent extends Event implements FetchEvent {
 self.FetchEvent = AdaptedFetchEvent;
 
 ;(async () => {
-  let server: Deno.Listener<Deno.NetAddr>;
+  let server: Deno.Listener;
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
     const { c, cert, k, key } = flags.parse(Deno.args);
