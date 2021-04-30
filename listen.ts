@@ -25,7 +25,12 @@ class AdaptedFetchEvent extends Event implements FetchEvent {
 }
 
 // TODO: Don't overwrite if already present?
-self.FetchEvent = AdaptedFetchEvent;
+Object.defineProperty(self, 'FetchEvent', {
+  configurable: false,
+  enumerable: false,
+  writable: false,
+  value: AdaptedFetchEvent,
+});
 
 ;(async () => {
   let server: Deno.Listener;
