@@ -16,7 +16,7 @@ const makeRespond = (denoReq: ServerRequest) => async ({ body, headers, status }
     reader?.cancel();
     // TODO: Swallow with other errors?
     // TODO: Logging?
-    if (err instanceof Deno.errors.BrokenPipe) {}
+    if (err instanceof Deno.errors.BrokenPipe) { }
     else console.error(err);
   }
 }
@@ -66,7 +66,7 @@ Object.defineProperty(self, 'FetchEvent', {
   value: DenoFetchEvent,
 });
 
-;(async () => {
+; (async () => {
   let server: Server;
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
@@ -85,7 +85,7 @@ Object.defineProperty(self, 'FetchEvent', {
       keyFile,
     });
   } else {
-    server = serve({ 
+    server = serve({
       hostname: self.location.hostname,
       port: Number(self.location.port || 80),
     });
@@ -97,7 +97,11 @@ Object.defineProperty(self, 'FetchEvent', {
 })();
 
 declare global {
-  /** Extends the lifetime of the install and activate events dispatched on the global scope as part of the service worker lifecycle. This ensures that any functional events (like FetchEvent) are not dispatched until it upgrades database schemas and deletes the outdated cache entries. */
+  /**
+   * Extends the lifetime of the install and activate events dispatched on the global scope as part of the
+   * service worker lifecycle. This ensures that any functional events (like FetchEvent) are not dispatched until it
+   * upgrades database schemas and deletes the outdated cache entries. 
+   */
   interface ExtendableEvent extends Event {
     waitUntil(f: any): void;
   }
@@ -123,7 +127,11 @@ declare global {
     new(type: string, eventInitDict: FetchEventInit): FetchEvent;
   };
 
-  /** This is the event type for fetch events dispatched on the service worker global scope. It contains information about the fetch, including the request and how the receiver will treat the response. It provides the event.respondWith() method, which allows us to provide a response to this fetch. */
+  /**
+   * This is the event type for fetch events dispatched on the service worker global scope. 
+   * It contains information about the fetch, including the request and how the receiver will treat the response. 
+   * It provides the event.respondWith() method, which allows us to provide a response to this fetch. 
+   */
   interface FetchEvent extends ExtendableEvent {
     readonly clientId: string;
     readonly preloadResponse: Promise<any>;
