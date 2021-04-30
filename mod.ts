@@ -2,7 +2,7 @@ import { serve, serveTLS, ServerRequest, Server } from "https://deno.land/std/ht
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
 import * as flags from "https://deno.land/std/flags/mod.ts";
 
-const respond = (denoReq: ServerRequest) => async ({ body, headers, status }: Response) => {
+const makeRespond = (denoReq: ServerRequest) => async ({ body, headers, status }: Response) => {
   const reader = body?.getReader();
   try {
     const denoReader = reader && readerFromStreamReader(reader);
@@ -31,14 +31,15 @@ class DenoFetchEvent extends Event implements FetchEvent {
     super('fetch');
     if (!(denoReq instanceof ServerRequest)) throw Error('Overload not implemented');
 
-    this.#respond = respond(denoReq);
+    this.#respond = makeRespond(denoReq);
 
-    const info = new URL(denoReq.url, self.location.origin).href;
-    denoReq.headers.set('deno-connecting-ip', (denoReq.conn.remoteAddr as Deno.NetAddr).hostname);
+    const { url, method, headers } = denoReq;
+    const info = new URL(url, self.location.origin).href;
+    headers.set('deno-connecting-ip', (denoReq.conn.remoteAddr as Deno.NetAddr).hostname);
     this.#request = new Request(info, {
-      method: denoReq.method,
-      headers: denoReq.headers,
-      body: denoReq.method !== 'GET' && denoReq.method !== 'HEAD'
+      method,
+      headers,
+      body: method !== 'GET' && method !== 'HEAD'
         ? readableStreamFromIterable(Deno.iter(denoReq.body))
         : null
     });
