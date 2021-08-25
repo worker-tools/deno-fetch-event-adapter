@@ -1,3 +1,7 @@
+/**
+ * @deprecated Since Deno 1.13 the native http module is stable. Use `listen.ts` instead.
+ */
+
 import { serve, serveTLS, ServerRequest, Server } from "https://deno.land/std/http/server.ts";
 import { readerFromStreamReader, readableStreamFromIterable } from 'https://deno.land/std/io/streams.ts';
 import * as flags from "https://deno.land/std/flags/mod.ts";

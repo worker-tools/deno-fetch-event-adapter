@@ -9,6 +9,7 @@ It works fine for local testing, developing Cloudflare Workers while offline, an
 ## Example
 
 ```ts
+// filename: "sw.js"
 import 'https://deno.land/x/fetch_event_adapter/listen.ts';
 
 if (typeof FetchEvent !== 'undefined') console.log(true);
@@ -21,18 +22,18 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-Your script needs the `--unstable` (for native HTTP) and `--allow-net` permissions. It also requires a `--location`,
+Your script needs the `--allow-net` permissions. It also requires a `--location`,
 to know on which port to listen for incoming connections:
 
 ```sh
-deno run --unstable --allow-net --location=http://localhost:8000 mod.ts
+deno run --allow-net --location=http://localhost:8000 sw.ts
 ```
 
 If you set the `--location` to either HTTPS or port 443, you have to provide a `--cert` and a `--key` parameter.
 Your script will also need the read permission to read the files:
 
 ```sh
-deno run --unstable --allow-net --allow-read --location=https://localhost:8000 mod.ts \
+deno run --allow-net --allow-read --location=https://localhost:8000 sw.ts \
   --cert=./path/to/localhost.crt \
   --key=./path/to/localhost.key
 ```
