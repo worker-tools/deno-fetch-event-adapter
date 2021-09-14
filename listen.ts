@@ -36,9 +36,12 @@ Object.defineProperty(self, 'FetchEvent', {
   let server: Deno.Listener;
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
-    const { c, cert, k, key } = flags.parse(Deno.args);
-    const certFile = cert || c;
-    const keyFile = key || k;
+    const { cert: certFile, key: keyFile } = flags.parse(Deno.args, { 
+      alias: { 
+        cert: ['c', 'cert-file'], 
+        key: ['k', 'key-file'],
+      } 
+    });
 
     if (!certFile || !keyFile) {
       console.warn('When using HTTPS or port 443, a --cert and --key are required.');
@@ -68,6 +71,7 @@ Object.defineProperty(self, 'FetchEvent', {
   }
 })();
 
+//#region Global Types
 declare global {
   /**
    * Extends the lifetime of the install and activate events dispatched on the global scope as part of the
@@ -119,3 +123,4 @@ declare global {
 
   function addEventListener(type: 'fetch', handler: (event: FetchEvent) => void): void;
 }
+//#endregion
