@@ -63,9 +63,10 @@ Object.defineProperty(self, 'FetchEvent', {
   for await (const conn of server) {
     (async () => {
       for await (const event of Deno.serveHttp(conn)) {
-        // (<any>event.request).deno = {};
-        // (<any>event.request).deno['connecting-ip'] = (<Deno.NetAddr>conn.remoteAddr).hostname;
-        self.dispatchEvent(new AdaptedFetchEvent(event));
+        const { hostname: ip } = <Deno.NetAddr>conn.remoteAddr;
+        const fe = new AdaptedFetchEvent(event);
+        fe.request.headers.set('x-forwarded-for', ip);
+        self.dispatchEvent(fe);
       }
     })();
   }
