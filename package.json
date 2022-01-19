@@ -28,7 +28,7 @@
   "author": "Florian Klampfer <mail@qwtel.com> (https://qwtel.com/)",
   "license": "MIT",
   "devDependencies": {
-    "shx": "^0.3.3"
+    "shx": "^0.3.4"
   },
   "repository": {
     "type": "git",
