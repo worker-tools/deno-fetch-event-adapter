@@ -70,8 +70,14 @@ Object.defineProperty(self, 'FetchEvent', {
   value: DenoFetchEvent,
 });
 
-; (async () => {
+const NAME = 'Deno Fetch Event Adapter';
+
+(async () => {
   let server: Server;
+
+  if (!self.location) {
+    throw new Error(`${NAME}: When using Deno Fetch Event Adapter, a --location is required.`)
+  }
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
     const { cert: certFile, key: keyFile } = flags.parse(Deno.args, { 
@@ -82,7 +88,7 @@ Object.defineProperty(self, 'FetchEvent', {
     });
 
     if (!certFile || !keyFile) {
-      console.warn('When using HTTPS or port 443, a --cert and --key are required.');
+      throw new Error(`${NAME}:  When using HTTPS or port 443, a --cert and --key are required.`);
     }
 
     server = serveTLS({
@@ -98,8 +104,16 @@ Object.defineProperty(self, 'FetchEvent', {
     });
   }
 
-  for await (const req of server) {
-    self.dispatchEvent(new DenoFetchEvent(req));
+  try {
+    for await (const req of server) {
+      self.dispatchEvent(new DenoFetchEvent(req));
+    }
+  } catch (error) {
+    self.dispatchEvent(new ErrorEvent('error', {
+      message: error?.message,
+      filename: import.meta.url,
+      error,
+    }));
   }
 })();
 
@@ -154,5 +168,6 @@ declare global {
   }
 
   function addEventListener(type: 'fetch', handler: (event: FetchEvent) => void): void;
+  function addEventListener(type: 'error', handler: (event: ErrorEvent) => void): void;
 }
 //#endregion

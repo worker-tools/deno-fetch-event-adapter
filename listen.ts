@@ -32,8 +32,14 @@ Object.defineProperty(self, 'FetchEvent', {
   value: AdaptedFetchEvent,
 });
 
-; (async () => {
+const NAME = 'Deno Fetch Event Adapter';
+
+(async () => {
   let server: Deno.Listener;
+
+  if (!self.location) {
+    throw new Error(`${NAME}: When using Deno Fetch Event Adapter, a --location is required.`)
+  }
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
     const { cert: certFile, key: keyFile } = flags.parse(Deno.args, { 
@@ -44,7 +50,7 @@ Object.defineProperty(self, 'FetchEvent', {
     });
 
     if (!certFile || !keyFile) {
-      console.warn('When using HTTPS or port 443, a --cert and --key are required.');
+      throw new Error(`${NAME}:  When using HTTPS or port 443, a --cert and --key are required.`);
     }
 
     server = Deno.listenTls({
@@ -62,11 +68,19 @@ Object.defineProperty(self, 'FetchEvent', {
 
   for await (const conn of server) {
     (async () => {
-      for await (const event of Deno.serveHttp(conn)) {
-        const { hostname: ip } = <Deno.NetAddr>conn.remoteAddr;
-        const fe = new AdaptedFetchEvent(event);
-        fe.request.headers.set('x-forwarded-for', ip);
-        self.dispatchEvent(fe);
+      try {
+        for await (const event of Deno.serveHttp(conn)) {
+          const { hostname: ip } = conn.remoteAddr as Deno.NetAddr;
+          const fe = new AdaptedFetchEvent(event);
+          fe.request.headers.set('x-forwarded-for', ip);
+          self.dispatchEvent(fe);
+        }
+      } catch (error) {
+        self.dispatchEvent(new ErrorEvent('error', {
+          message: error?.message,
+          filename: import.meta.url,
+          error,
+        }));
       }
     })();
   }
@@ -123,5 +137,6 @@ declare global {
   }
 
   function addEventListener(type: 'fetch', handler: (event: FetchEvent) => void): void;
+  function addEventListener(type: 'error', handler: (event: ErrorEvent) => void): void;
 }
 //#endregion
