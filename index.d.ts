@@ -40,6 +40,7 @@ declare global {
   }
 
   function addEventListener(type: 'fetch', handler: (event: FetchEvent) => void): void;
+  function addEventListener(type: 'error', handler: (event: ErrorEvent) => void): void;
 }
 
 export {}
