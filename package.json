@@ -9,9 +9,12 @@
   "exports": {
     ".": "./dist/index.js",
     "./listen": "./dist/listen.js",
-    "./mod.ts": "./mod.ts",
     "./listen.ts": "./listen.ts"
   },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -21,9 +24,8 @@
   "scripts": {
     "clean": "shx rm -rf dist",
     "prepack": "npm run clean && npm run build",
-    "build": "shx mkdir -p dist && npm run build:mod && npm run build:listen",
-    "build:mod": "deno bundle mod.ts > dist/index.js",
-    "build:listen": "deno bundle --unstable listen.ts > dist/listen.js"
+    "build": "shx mkdir -p dist && npm run bundle",
+    "bundle": "deno bundle listen.ts > dist/index.js"
   },
   "author": "Florian Klampfer <mail@qwtel.com> (https://qwtel.com/)",
   "license": "MIT",
