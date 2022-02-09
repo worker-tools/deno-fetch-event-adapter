@@ -19,7 +19,7 @@ jobs:
       - uses: maximousblk/setup-deno@v1
         with:
           version: '1.17.0'
-      - run: npm ci
+      - run: npm i
       - run: npm test
 
   publish-npm:
@@ -34,7 +34,7 @@ jobs:
       - uses: maximousblk/setup-deno@v1
         with:
           version: '1.17.0'
-      - run: npm ci
+      - run: npm i
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
