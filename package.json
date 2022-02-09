@@ -1,6 +1,6 @@
 {
   "name": "@worker-tools/deno-fetch-event-adapter",
-  "description": "",
+  "description": "Dispatches global `fetch` events using Deno's native HTTP server.",
   "version": "1.0.1",
   "type": "module",
   "main": "dist/index.js",
@@ -12,7 +12,7 @@
   },
   "files": [
     "dist",
-    "*.d.ts"
+    "*.ts"
   ],
   "publishConfig": {
     "access": "public"
@@ -21,16 +21,13 @@
     "test": "test"
   },
   "scripts": {
-    "clean": "shx rm -rf dist",
+    "clean": "rm -rf dist",
     "prepack": "npm run clean && npm run build",
-    "build": "shx mkdir -p dist && npm run bundle",
+    "build": "mkdir -p dist && npm run bundle",
     "bundle": "deno bundle listen.ts > dist/index.js"
   },
   "author": "Florian Klampfer <mail@qwtel.com> (https://qwtel.com/)",
   "license": "MIT",
-  "devDependencies": {
-    "shx": "^0.3.4"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/worker-tools/deno-fetch-event-adapter.git"
