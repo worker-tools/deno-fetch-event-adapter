@@ -2,15 +2,29 @@ import * as flags from "https://deno.land/std/flags/mod.ts";
 
 class AdaptedFetchEvent extends Event implements FetchEvent {
   #event: Deno.RequestEvent;
+  #request: Request;
 
   constructor(type: string, eventInitDict?: FetchEventInit);
-  constructor(event: Deno.RequestEvent);
-  constructor(event: string | Deno.RequestEvent) {
+  constructor(event: Deno.RequestEvent, hostname: string | null);
+  constructor(event: string | Deno.RequestEvent, hostname?: string | null | FetchEventInit) {
     super('fetch');
-    if (typeof event === 'string') throw Error('Overload not implemented');
+    if (typeof event === 'string' || typeof hostname === 'object') throw Error('Overload not implemented');
     this.#event = event;
+    
+    // Workaround for immutable headers.
+    // Instead of copying the request, we return a proxy that returns a custom headers object:
+    const headers = new Headers([
+      ...this.#event.request.headers,
+      ...hostname ? [['x-forwarded-for', hostname]] : [],
+    ]);
+
+    this.#request = new Proxy(this.#event.request, {
+      get(target, prop) {
+        return prop === 'headers' ? headers : Reflect.get(target, prop);
+      },
+    });
   }
-  get request(): Request { return this.#event.request };
+  get request(): Request { return this.#request };
   respondWith(r: Response | Promise<Response>): void {
     this.#event.respondWith(r);
   }
@@ -70,10 +84,8 @@ const NAME = 'Deno Fetch Event Adapter';
     (async () => {
       try {
         for await (const event of Deno.serveHttp(conn)) {
-          const { hostname: ip } = conn.remoteAddr as Deno.NetAddr;
-          const fe = new AdaptedFetchEvent(event);
-          fe.request.headers.set('x-forwarded-for', ip);
-          self.dispatchEvent(fe);
+          const { hostname } = conn.remoteAddr as Deno.NetAddr;
+          self.dispatchEvent(new AdaptedFetchEvent(event, hostname));
         }
       } catch (error) {
         self.dispatchEvent(new ErrorEvent('error', {
