@@ -8,7 +8,7 @@ This has been scrapped, but this module works just fine for local testing, devel
 ## Example
 
 ```ts
-// filename: "worker.js"
+// file: "worker.js"
 import 'https://deno.land/x/fetch_event_adapter/listen.ts';
 
 // This module adds a global `FetchEvent`

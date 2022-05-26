@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-var no-explicit-any no-empty-interface
 import * as flags from "https://deno.land/std/flags/mod.ts";
 
 class AdaptedFetchEvent extends Event implements FetchEvent {
@@ -10,21 +11,12 @@ class AdaptedFetchEvent extends Event implements FetchEvent {
     super('fetch');
     if (typeof event === 'string' || typeof hostname === 'object') throw Error('Overload not implemented');
     this.#event = event;
-    
-    // Workaround for immutable headers.
-    // Instead of copying the request, we return a proxy that returns a custom headers object:
-    const headers = new Headers([
-      ...this.#event.request.headers,
-      ...hostname ? [['x-forwarded-for', hostname]] : [],
-    ]);
 
-    this.#request = new Proxy(this.#event.request, {
-      get(target, prop) {
-        return prop === 'headers' ? headers : Reflect.get(target, prop);
-      },
-    });
+    // Workaround for immutable headers
+    const request = this.#request = new Request(event.request.url, event.request);
+    if (hostname) request.headers.set('x-forwarded-for', hostname);
   }
-  get request(): Request { return this.#request };
+  get request(): Request { return this.#request }
   respondWith(r: Response | Promise<Response>): void {
     this.#event.respondWith(r);
   }
@@ -32,10 +24,10 @@ class AdaptedFetchEvent extends Event implements FetchEvent {
     // Deno doesn't shut down the way Service Workers or CF Workers do, so this is a noop.
   }
 
-  get clientId(): string { return '' };
-  get preloadResponse(): Promise<any> { return Promise.resolve() };
-  get replacesClientId(): string { return '' };
-  get resultingClientId(): string { return '' };
+  get clientId(): string { return '' }
+  get preloadResponse(): Promise<any> { return Promise.resolve() }
+  get replacesClientId(): string { return '' }
+  get resultingClientId(): string { return '' }
 }
 
 // TODO: Don't overwrite if already present?
@@ -56,11 +48,11 @@ const NAME = 'Deno Fetch Event Adapter';
   }
 
   if (self.location.protocol === 'https:' || self.location.port === '433') {
-    const { cert: certFile, key: keyFile } = flags.parse(Deno.args, { 
-      alias: { 
-        cert: ['c', 'cert-file'], 
+    const { cert: certFile, key: keyFile } = flags.parse(Deno.args, {
+      alias: {
+        cert: ['c', 'cert-file'],
         key: ['k', 'key-file'],
-      } 
+      }
     });
 
     if (!certFile || !keyFile) {
@@ -80,6 +72,7 @@ const NAME = 'Deno Fetch Event Adapter';
     });
   }
 
+  // TODO: missing try-catch?
   for await (const conn of server) {
     (async () => {
       try {
